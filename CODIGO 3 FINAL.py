@@ -1,20 +1,37 @@
+
+"""Codigo final, se cambio la GUI"""
+
+
+# PyQt5 para gui
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (QApplication, QHBoxLayout, QVBoxLayout, QWidget,
+                             QCheckBox, QMainWindow, QComboBox,QPushButton)
+from PyQt5.QtCore import QTimer
+
+# Qt pyqtgraph para graficos, compatible con widgents de PyQt5
+from pyqtgraph.Qt import QtCore
+
+# pyqt para graficos y numpy para operaciones matematicas
+import pyqtgraph as pg
+import numpy as np
+
+# thread para ejecuciones paralelas, sys para modificar archivos del sistema operativo, serial para comunicacion serial
+import threading
 import sys
 import serial
-import serial.tools.list_ports
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QComboBox, QCheckBox, QLabel, QGridLayout
-from PyQt5.QtCore import QTimer
-import pyqtgraph as pg
-from scipy.signal import butter, lfilter, iirnotch  # Para aplicar los filtros
-import numpy as np
-import threading
 
+# scipy para procesado de señal
+from scipy.signal import butter, lfilter, iirnotch
 
-
+# time para cronometrar partes del codigo
 import time
+
+# os para interactuar con archivos y datetime para fecha
 import os
 from datetime import datetime
 
 
+# funcion creacion del archivo
 def create_file(file_name):
     # valores hacia la carpeta datos, si no existe se crea
     directory = os.path.join(os.getcwd(), 'datos')
@@ -38,9 +55,14 @@ def create_file(file_name):
 class MCC(QMainWindow):
     def __init__(self,file_name):
         super().__init__()
+
+        #Guardar puerto serial
         self.serial_port = None
+        # Lista de puerto seriales a usar
         self.serial_ports = []
+        # boolean si esta conectado
         self.is_connected = False
+        #Timer del grafico
         self.timer = QTimer(self)
 
         self.Fs = 675  # setear la frecuencia de sampleo, cuantos datos le llegan por segundo
@@ -55,6 +77,7 @@ class MCC(QMainWindow):
         self.ptr1 = 0  # puntero para el buffer (posicion)
         self.ptr2 = 0  # puntero para el buffer (posicion)
 
+        # Variables vacias para los filtros
         self.lowpass1 = None
         self.highpass1 =  None
         self.notch1 =  None
@@ -121,6 +144,8 @@ class MCC(QMainWindow):
         self.state= 0
         self.function = 0
         self.functions = [self.funcion_atras, self.funcion_stop, self.funcion_adelante]
+
+        #Inicializar GUI
         self.initUI()
 
     def funcion_derecha(self):
